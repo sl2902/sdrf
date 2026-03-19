@@ -67,21 +67,36 @@ def _build_global_modes(sub_df: pd.DataFrame):
             non_na_ratio[col] = 0
             continue
 
-        # Get per-PXD representative value (mode within each PXD)
-        def pxd_mode(x):
-            clean = x[~x.isin(NA_VALS)].dropna()
-            if len(clean) == 0:
-                return None
-            return clean.mode().iloc[0]
+        # Mode from all rows
+        vals = train_df[col].dropna().astype(str)
+        vals = vals[~vals.isin(NA_VALS)]
 
-        per_pxd = train_df.groupby("PXD")[col].agg(pxd_mode).dropna()
-        counter = Counter(per_pxd.tolist())
-        non_na_ratio[col] = len(per_pxd) / n_train_pxds
+        # # Get per-PXD representative value (mode within each PXD)
+        # def pxd_mode(x):
+        #     clean = x[~x.isin(NA_VALS)].dropna()
+        #     if len(clean) == 0:
+        #         return None
+        #     return clean.mode().iloc[0]
+
+        # per_pxd = train_df.groupby("PXD")[col].agg(pxd_mode).dropna()
+        # counter = Counter(per_pxd.tolist())
+        # non_na_ratio[col] = len(per_pxd) / n_train_pxds
+
+        # Mode from all rows (captures most common value correctly)
+        counter = Counter(vals.tolist())
 
         if counter:
             global_modes[col] = counter.most_common(1)[0][0]
         else:
             global_modes[col] = "Not Applicable"
+        
+        pxds_with_value = train_df[
+            train_df[col].notna() &
+            ~train_df[col].isin(NA_VALS)
+        ]["PXD"].nunique()
+        non_na_ratio[col] = pxds_with_value / n_train_pxds
+        
+        
 
     del train_df
     return global_modes, non_na_ratio
