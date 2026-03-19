@@ -20,6 +20,63 @@ OUTPUT_DIR = "/kaggle/working"
 _SKIP_COLS = {"comment[fractionidentifier]", "characteristics[biologicalreplicate]"}
 
 
+NEVER_GLOBAL = {
+    "Characteristics[Age]", "Characteristics[AncestryCategory]",
+    "Characteristics[Bait]", "Characteristics[CellLine]",
+    "Characteristics[CellPart]", "Characteristics[Compound]",
+    "Characteristics[Depletion]", "Characteristics[GrowthRate]",
+    "Characteristics[PooledSample]", "Characteristics[SamplingTime]",
+    "Characteristics[Strain]", "Characteristics[SyntheticPeptide]",
+    "Characteristics[Temperature]", "Characteristics[Time]",
+    "Characteristics[Treatment]", "Characteristics[TumorSize]",
+    "Characteristics[TumorGrade]", "Characteristics[TumorStage]",
+    "Characteristics[TumorCellularity]", "Characteristics[TumorSite]",
+    "Characteristics[AnatomicSiteTumor]",
+    "Characteristics[GeneticModification]", "Characteristics[Genotype]",
+    "Characteristics[NumberOfBiologicalReplicates]",
+    "Characteristics[NumberOfSamples]",
+    "Characteristics[NumberOfTechnicalReplicates]",
+    "Characteristics[OriginSiteDisease]",
+    "Comment[CollisionEnergy]", "Comment[NumberOfFractions]",
+    "Comment[EnrichmentMethod]",
+    "Characteristics[Modification].3", "Characteristics[Modification].4",
+    "Characteristics[Modification].5", "Characteristics[Modification].6",
+    "Characteristics[Sex]", "Characteristics[DevelopmentalStage]",
+    "Characteristics[Disease]", "Characteristics[OrganismPart]",
+    "Characteristics[CellType]", "Characteristics[Specimen]",
+}
+
+
+def _build_global_modes(sub_df: pd.DataFrame):
+    """Build global mode fallback from training.csv."""
+    from collections import Counter
+    TRAIN_CSV = "/kaggle/input/competitions/harmonizing-the-data-of-your-data/Training_SDRFs/HarmonizedFiles/training.csv"
+    train_df = pd.read_csv(TRAIN_CSV, low_memory=False, dtype=str)
+    n_train_pxds = train_df["PXD"].nunique() if "PXD" in train_df.columns else 103
+
+    global_modes = {}
+    non_na_ratio = {}
+    for col in sub_df.columns:
+        if col in ["ID", "PXD", "Raw Data File", "Usage"]:
+            continue
+        if col in train_df.columns:
+            vals = train_df[col].dropna().astype(str)
+            vals = vals[~vals.isin(["Not Applicable", "not applicable", "NA", "nan", "TextSpan", ""])]
+            counter = Counter(vals.tolist())
+        else:
+            counter = Counter()
+        total = sum(counter.values())
+        if total > 0:
+            global_modes[col] = counter.most_common(1)[0][0]
+            non_na_ratio[col] = total / n_train_pxds
+        else:
+            global_modes[col] = "Not Applicable"
+            non_na_ratio[col] = 0
+
+    del train_df
+    return global_modes, non_na_ratio
+
+
 def build_submission(results: dict, two_pass: bool = False) -> pd.DataFrame:
     sub_df = pd.read_csv(SAMPLE_SUB)
     sub_df = sub_df.loc[:, ~sub_df.columns.str.match(r'^Unnamed')]
@@ -28,6 +85,9 @@ def build_submission(results: dict, two_pass: bool = False) -> pd.DataFrame:
     for col in sub_df.columns:
         if col not in ["ID", "PXD", "Raw Data File", "Usage"]:
             sub_df[col] = "Not Applicable"
+
+    # Build global mode fallback from training data
+    global_modes, non_na_ratio = _build_global_modes(sub_df)
 
     # Case-insensitive column lookup
     col_map = {c.lower().strip(): c for c in sub_df.columns}
@@ -81,6 +141,20 @@ def build_submission(results: dict, two_pass: bool = False) -> pd.DataFrame:
                 sub_df.at[idx, frac_col] = str((rank % n_fractions) + 1)
             if brep_col:
                 sub_df.at[idx, brep_col] = str((rank % n_replicates) + 1)
+
+    # Global mode fallback — fill remaining Not Applicable cells
+    # Only for high-frequency columns (>75% of training papers have a value)
+    # Never applied to study-specific columns
+    for idx in sub_df.index:
+        for col in sub_df.columns:
+            if col in ["ID", "PXD", "Raw Data File", "Usage"]:
+                continue
+            if sub_df.at[idx, col] != "Not Applicable":
+                continue
+            if col in NEVER_GLOBAL:
+                continue
+            if non_na_ratio.get(col, 0) > 0.75:
+                sub_df.at[idx, col] = global_modes[col]
 
     # Summary
     non_na = (sub_df.drop(columns=["ID", "PXD", "Raw Data File", "Usage"]) != "Not Applicable").sum().sum()
