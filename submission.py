@@ -215,6 +215,46 @@ def build_submission(results: dict, two_pass: bool = False) -> pd.DataFrame:
     print(f"Non-NA values    : {non_na}")
     return sub_df
 
+def merge_results(*result_dicts) -> dict:
+    """
+    Merge multiple extraction result dicts.
+    First dict is primary — subsequent dicts fill NA gaps.
+    """
+    merged = {}
+    all_pxds = set()
+    for r in result_dicts:
+        all_pxds.update(r.keys())
+
+    for pxd in all_pxds:
+        # Find first successful result as base
+        base = None
+        for r in result_dicts:
+            if r.get(pxd, {}).get("status") == "ok":
+                base = r[pxd]
+                break
+        if not base:
+            continue
+
+        merged_meta = dict(base["metadata"])
+
+        # Fill gaps from remaining dicts
+        for r in result_dicts[1:]:
+            entry = r.get(pxd, {})
+            if entry.get("status") != "ok":
+                continue
+            for col, val in entry["metadata"].items():
+                if merged_meta.get(col, "Not Applicable") in ["Not Applicable", "N/A", "", None]:
+                    if val and str(val).lower() not in ["not applicable", "n/a", ""]:
+                        merged_meta[col] = val
+
+        merged[pxd] = {
+            "metadata": merged_meta,
+            "raw_files": base["raw_files"],
+            "status": "ok",
+        }
+
+    return merged
+
 
 def save_submission(results: dict, two_pass: bool = False, path: str = None) -> str:
     if path is None:
