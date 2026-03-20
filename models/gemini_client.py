@@ -2,6 +2,7 @@ import json
 import logging
 
 from google import genai
+from google.oauth2 import service_account
 from google.genai import types
 from tenacity import (
     retry, stop_after_attempt, wait_exponential,
@@ -18,11 +19,18 @@ class GeminiClient(BaseModelClient):
         # self.client = genai.Client(api_key=api_key)
         # self.model = model
         # self.temperature = temperature
-    def __init__(self, project: str, location: str, model: str = "gemini-2.5-pro", temperature: float = 0):
+    def __init__(
+            self, 
+            project: str, 
+            credentials: service_account.Credentials,
+            location: str = "us-central1",
+            model: str = "gemini-2.5-pro", 
+            temperature: float = 0):
         self.client = genai.Client(
             vertexai=True,
             project=project,
             location=location,
+            credentials=credentials,
         )
         self.model = model
         self.temperature = temperature
