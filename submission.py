@@ -47,57 +47,85 @@ NEVER_GLOBAL = {
 }
 
 
+# def _build_global_modes(sub_df: pd.DataFrame):
+#     """Build global mode fallback from training.csv."""
+#     from collections import Counter
+#     TRAIN_CSV = "/kaggle/input/competitions/harmonizing-the-data-of-your-data/Training_SDRFs/HarmonizedFiles/training.csv"
+#     train_df = pd.read_csv(TRAIN_CSV, low_memory=False, dtype=str)
+#     n_train_pxds = train_df["PXD"].nunique()
+
+#     NA_VALS = ["Not Applicable", "not applicable", "NA", "nan", "TextSpan", ""]
+
+#     global_modes = {}
+#     non_na_ratio = {}
+
+#     for col in sub_df.columns:
+#         if col in ["ID", "PXD", "Raw Data File", "Usage"]:
+#             continue
+#         if col not in train_df.columns:
+#             global_modes[col] = "Not Applicable"
+#             non_na_ratio[col] = 0
+#             continue
+
+#         # Mode from all rows
+#         vals = train_df[col].dropna().astype(str)
+#         vals = vals[~vals.isin(NA_VALS)]
+
+#         # # Get per-PXD representative value (mode within each PXD)
+#         # def pxd_mode(x):
+#         #     clean = x[~x.isin(NA_VALS)].dropna()
+#         #     if len(clean) == 0:
+#         #         return None
+#         #     return clean.mode().iloc[0]
+
+#         # per_pxd = train_df.groupby("PXD")[col].agg(pxd_mode).dropna()
+#         # counter = Counter(per_pxd.tolist())
+#         # non_na_ratio[col] = len(per_pxd) / n_train_pxds
+
+#         # Mode from all rows (captures most common value correctly)
+#         counter = Counter(vals.tolist())
+
+#         if counter:
+#             global_modes[col] = counter.most_common(1)[0][0]
+#         else:
+#             global_modes[col] = "Not Applicable"
+        
+#         pxds_with_value = train_df[
+#             train_df[col].notna() &
+#             ~train_df[col].isin(NA_VALS)
+#         ]["PXD"].nunique()
+#         non_na_ratio[col] = pxds_with_value / n_train_pxds
+        
+        
+
+#     del train_df
+#     return global_modes, non_na_ratio
 def _build_global_modes(sub_df: pd.DataFrame):
     """Build global mode fallback from training.csv."""
     from collections import Counter
     TRAIN_CSV = "/kaggle/input/competitions/harmonizing-the-data-of-your-data/Training_SDRFs/HarmonizedFiles/training.csv"
     train_df = pd.read_csv(TRAIN_CSV, low_memory=False, dtype=str)
-    n_train_pxds = train_df["PXD"].nunique()
-
-    NA_VALS = ["Not Applicable", "not applicable", "NA", "nan", "TextSpan", ""]
-
+    n_train_pxds = train_df["PXD"].nunique() if "PXD" in train_df.columns else 103
+ 
     global_modes = {}
     non_na_ratio = {}
-
     for col in sub_df.columns:
         if col in ["ID", "PXD", "Raw Data File", "Usage"]:
             continue
-        if col not in train_df.columns:
-            global_modes[col] = "Not Applicable"
-            non_na_ratio[col] = 0
-            continue
-
-        # Mode from all rows
-        vals = train_df[col].dropna().astype(str)
-        vals = vals[~vals.isin(NA_VALS)]
-
-        # # Get per-PXD representative value (mode within each PXD)
-        # def pxd_mode(x):
-        #     clean = x[~x.isin(NA_VALS)].dropna()
-        #     if len(clean) == 0:
-        #         return None
-        #     return clean.mode().iloc[0]
-
-        # per_pxd = train_df.groupby("PXD")[col].agg(pxd_mode).dropna()
-        # counter = Counter(per_pxd.tolist())
-        # non_na_ratio[col] = len(per_pxd) / n_train_pxds
-
-        # Mode from all rows (captures most common value correctly)
-        counter = Counter(vals.tolist())
-
-        if counter:
+        if col in train_df.columns:
+            vals = train_df[col].dropna().astype(str)
+            vals = vals[~vals.isin(["Not Applicable", "not applicable", "NA", "nan", "TextSpan", ""])]
+            counter = Counter(vals.tolist())
+        else:
+            counter = Counter()
+        total = sum(counter.values())
+        if total > 0:
             global_modes[col] = counter.most_common(1)[0][0]
+            non_na_ratio[col] = total / n_train_pxds
         else:
             global_modes[col] = "Not Applicable"
-        
-        pxds_with_value = train_df[
-            train_df[col].notna() &
-            ~train_df[col].isin(NA_VALS)
-        ]["PXD"].nunique()
-        non_na_ratio[col] = pxds_with_value / n_train_pxds
-        
-        
-
+            non_na_ratio[col] = 0
+ 
     del train_df
     return global_modes, non_na_ratio
 
