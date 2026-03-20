@@ -73,13 +73,15 @@ async def run_extraction(
     prompt,
     two_pass: bool = False,
     max_concurrent: int = 2,
-    cache_file: str = CACHE_FILE,
+    model_name: str = "default",
+    cache_dir: str = OUTPUT_DIR,
 ) -> dict:
     """
     Run async extraction over all test papers.
     Skips already-cached successful results.
     Saves cache after each completion for crash safety.
     """
+    cache_file = os.path.join(cache_dir, f"extraction_cache_{model_name}.json")
     # Load existing cache
     if os.path.exists(cache_file):
         with open(cache_file) as f:
