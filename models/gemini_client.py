@@ -14,8 +14,16 @@ logger = logging.getLogger(__name__)
 
 
 class GeminiClient(BaseModelClient):
-    def __init__(self, api_key: str, model: str = "gemini-2.5-pro-preview-03-25", temperature: float = 0):
-        self.client = genai.Client(api_key=api_key)
+    # def __init__(self, api_key: str, model: str = "gemini-2.5-pro-preview-03-25", temperature: float = 0):
+        # self.client = genai.Client(api_key=api_key)
+        # self.model = model
+        # self.temperature = temperature
+    def __init__(self, project: str, location: str, model: str = "gemini-2.5-pro", temperature: float = 0):
+        self.client = genai.Client(
+            vertexai=True,
+            project=project,
+            location=location,
+        )
         self.model = model
         self.temperature = temperature
 
