@@ -172,6 +172,18 @@ ANCESTRY_MAP = {
     "latino": "Hispanic",
 }
 
+_PRIDE_PTM_MAP = {
+    "monohydroxylated residue": "Oxidation",
+    "iodoacetamide derivatized residue": "Carbamidomethyl",
+    "phosphorylated residue": "Phospho",
+    "acetylated residue": "Acetyl",
+    "deamidated residue": "Deamidated",
+    "ubiquitinylated lysine": "GlyGly",
+    "methylated residue": "Methyl",
+    "dimethylated residue": "Dimethyl",
+    "trimethylated residue": "Trimethyl",
+}
+
 # Non-MS instruments to block
 _NON_MS_KEYWORDS = [
     "cryo", "flow cytom", "sequenc", "illumina", "acoustic", "therapy",
