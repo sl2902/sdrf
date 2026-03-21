@@ -44,6 +44,7 @@ NEVER_GLOBAL = {
     "Characteristics[Sex]", "Characteristics[DevelopmentalStage]",
     "Characteristics[Disease]", "Characteristics[OrganismPart]",
     "Characteristics[CellType]", "Characteristics[Specimen]",
+    "Characteristics[SpikedCompound]",
 }
 
 
