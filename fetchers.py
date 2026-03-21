@@ -11,7 +11,7 @@ import pandas as pd
 from xml.etree import ElementTree as ET
 from collections import defaultdict
 
-from normalization import _PRIDE_PTM_MAP
+from .normalization import _PRIDE_PTM_MAP
 
 logger = logging.getLogger(__name__)
 
