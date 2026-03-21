@@ -11,6 +11,8 @@ import pandas as pd
 from xml.etree import ElementTree as ET
 from collections import defaultdict
 
+from normalization import _PRIDE_PTM_MAP
+
 logger = logging.getLogger(__name__)
 
 PRIDE_API  = "https://www.ebi.ac.uk/pride/ws/archive/v2/projects"
@@ -52,10 +54,11 @@ async def fetch_pride(pxd: str, client: httpx.AsyncClient) -> dict:
             if name:
                 meta["characteristics[organism]"] = name
 
-        # OrganismPart
-        parts = data.get("organismParts", [])
-        if parts:
-            meta["characteristics[organismpart]"] = parts[0].get("name", "")
+        # let LLM fetch this
+        # # OrganismPart
+        # parts = data.get("organismParts", [])
+        # if parts:
+        #     meta["characteristics[organismpart]"] = parts[0].get("name", "")
 
         # Diseases
         diseases = data.get("diseases", [])
@@ -86,6 +89,7 @@ async def fetch_pride(pxd: str, client: httpx.AsyncClient) -> dict:
                 if isinstance(p, dict):
                     p = p.get("name", "") or p.get("value", "")
                 p = re.sub(r'\s*\(.*?\)', '', str(p)).strip()
+                p = _PRIDE_PTM_MAP.get(p.lower(), p)
                 # Skip generic "no PTMs" entries
                 if p and "no ptm" not in p.lower() and "not included" not in p.lower():
                     clean.append(p)
