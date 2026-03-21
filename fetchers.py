@@ -43,11 +43,21 @@ async def fetch_pride(pxd: str, client: httpx.AsyncClient) -> dict:
         return meta
     try:
         data = resp.json()
+
+        # Organism — strip NCBI ID suffix e.g. "Homo sapiens (human)" → "Homo sapiens"
         organisms = data.get("organisms", [])
         if organisms:
-            names = [o.get("name", "") for o in organisms if o.get("name")]
-            if names:
-                meta["characteristics[organism]"] = names[0]
+            name = organisms[0].get("name", "")
+            name = re.sub(r'\s*\(.*?\)', '', name).strip()  # remove "(human)" etc
+            if name:
+                meta["characteristics[organism]"] = name
+
+        # OrganismPart
+        parts = data.get("organismParts", [])
+        if parts:
+            meta["characteristics[organismpart]"] = parts[0].get("name", "")
+
+        # Diseases
         diseases = data.get("diseases", [])
         if diseases:
             names = [d.get("name", "") for d in diseases if d.get("name")]
@@ -55,33 +65,48 @@ async def fetch_pride(pxd: str, client: httpx.AsyncClient) -> dict:
                 meta["characteristics[disease]"] = names[0]
                 if len(names) > 1:
                     meta["characteristics[disease].1"] = names[1]
+
+        # Instruments
         instruments = data.get("instruments", [])
         if instruments:
             ms_instruments = [
-                inst.get("name", "") for inst in instruments
-                if any(kw in inst.get("name", "").lower() for kw in _MS_KEYWORDS)
+                i.get("name", "") for i in instruments
+                if any(kw in i.get("name", "").lower() for kw in _MS_KEYWORDS)
             ]
             if ms_instruments:
                 meta["comment[instrument]"] = ms_instruments[0]
                 if len(ms_instruments) > 1:
                     meta["comment[instrument].1"] = ms_instruments[1]
+
+        # PTMs
+        ptms = data.get("identifiedPTMStrings", [])
+        if ptms:
+            clean = [re.sub(r'\s*\(.*?\)', '', p).strip() for p in ptms]
+            clean = [p for p in clean if p]
+            if clean:
+                meta["characteristics[modification]"] = clean[0]
+                for i, p in enumerate(clean[1:], 1):
+                    meta[f"characteristics[modification].{i}"] = p
+
+        # Keywords for label/acquisition/fragmentation
         keywords = data.get("keywords", [])
-        if keywords:
-            kw_text = " ".join([k.get("value", "") for k in keywords]).lower()
-            if "label free" in kw_text or "label-free" in kw_text:
-                meta["characteristics[label]"] = "label free sample"
-            elif "tmt" in kw_text:
-                meta["characteristics[label]"] = "TMT"
-            elif "silac" in kw_text:
-                meta["characteristics[label]"] = "SILAC"
-            if "hcd" in kw_text:
-                meta["comment[fragmentationmethod]"] = "HCD"
-            elif "cid" in kw_text:
-                meta["comment[fragmentationmethod]"] = "CID"
-            if "dia" in kw_text:
-                meta["comment[acquisitionmethod]"] = "DIA"
-            elif "dda" in kw_text:
-                meta["comment[acquisitionmethod]"] = "DDA"
+        kw_text = " ".join([k.get("name", k) if isinstance(k, dict) else str(k) 
+                           for k in keywords]).lower()
+        if "label free" in kw_text or "label-free" in kw_text:
+            meta["characteristics[label]"] = "label free sample"
+        elif "tmt" in kw_text:
+            meta["characteristics[label]"] = "TMT"
+        elif "silac" in kw_text:
+            meta["characteristics[label]"] = "SILAC"
+        if "hcd" in kw_text:
+            meta["comment[fragmentationmethod]"] = "HCD"
+        elif "cid" in kw_text:
+            meta["comment[fragmentationmethod]"] = "CID"
+        if "dia" in kw_text or "data independent" in kw_text:
+            meta["comment[acquisitionmethod]"] = "DIA"
+        elif "dda" in kw_text or "data dependent" in kw_text:
+            meta["comment[acquisitionmethod]"] = "DDA"
+
     except Exception as e:
         logger.warning(f"PRIDE parse error {pxd}: {e}")
     return meta
