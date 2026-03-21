@@ -81,8 +81,14 @@ async def fetch_pride(pxd: str, client: httpx.AsyncClient) -> dict:
         # PTMs
         ptms = data.get("identifiedPTMStrings", [])
         if ptms:
-            clean = [re.sub(r'\s*\(.*?\)', '', p).strip() for p in ptms]
-            clean = [p for p in clean if p]
+            clean = []
+            for p in ptms:
+                if isinstance(p, dict):
+                    p = p.get("name", "") or p.get("value", "")
+                p = re.sub(r'\s*\(.*?\)', '', str(p)).strip()
+                # Skip generic "no PTMs" entries
+                if p and "no ptm" not in p.lower() and "not included" not in p.lower():
+                    clean.append(p)
             if clean:
                 meta["characteristics[modification]"] = clean[0]
                 for i, p in enumerate(clean[1:], 1):
