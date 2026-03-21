@@ -138,6 +138,23 @@ ORGANISM_MAP = {
     "mesocricetus auratus": "Mesocricetus auratus",
 }
 
+ORGANISM_PART_MAP = {
+    "plasma": "blood plasma",
+    "serum": "blood serum",
+    "csf": "cerebrospinal fluid",
+    "frontal cortex": "brain",
+    "cerebellum": "brain",
+    "cortex": "brain",
+    "hippocampus": "brain",
+    "left atrium": "heart",
+    "right atrium": "heart",
+    "left ventricle": "heart",
+    "right ventricle": "heart",
+    "ovarian": "ovary",
+    "left ovary": "ovary",
+    "right ovary": "ovary",
+}
+
 FRACTIONATION_MAP = {
     "no fractionation":                  "no fractionation",
     "none":                              "no fractionation",
@@ -226,13 +243,23 @@ def normalize_value(col: str, val: str) -> str:
     elif "organism" in col and "part" not in col:
         return ORGANISM_MAP.get(vl, v)
 
+    # elif "sex" in col:
+    #     if "female" in vl or "woman" in vl:
+    #         return "female"
+    #     elif "male" in vl or "man" in vl:
+    #         return "male"
+    #     elif "female" in vl or "woman" in vl and "male" in vl or "man" in vl:
+    #         return "male|female"
+    #     return v
     elif "sex" in col:
-        if "female" in vl or "woman" in vl:
+        if "female" in vl or "woman" in vl or "women" in vl:
             return "female"
-        elif "male" in vl or "man" in vl:
+        elif "male" in vl or "man" in vl or "men" in vl:
             return "male"
-        elif "female" in vl or "woman" in vl and "male" in vl or "man" in vl:
-            return "male|female"
+        elif vl == "f":
+            return "female"
+        elif vl == "m":
+            return "male"
         return v
 
     elif "cellline" in col:
@@ -266,5 +293,8 @@ def normalize_value(col: str, val: str) -> str:
     
     elif "ancestrycategory" in col:
         return ANCESTRY_MAP.get(vl, v)
+    
+    elif "organismpart" in col:
+        return ORGANISM_PART_MAP.get(vl, v)
 
     return v
