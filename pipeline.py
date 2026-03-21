@@ -1,20 +1,21 @@
+
 """
 SDRF Extraction Pipeline
 ------------------------
 Pluggable model and prompt. Two-pass extraction with async, retry, and caching.
-
+ 
 Usage in Kaggle notebook:
     from sdrf.models import OpenAIClient       # or GeminiClient
     from sdrf.prompts import v1 as prompt
     from sdrf.pipeline import run_extraction
-
-    model  = OpenAIClient(api_key=OPENAI_API_KEY, model="gpt-4o")
-    results = await run_extraction(model, prompt, TWO_PASS=True)
+ 
+    model   = OpenAIClient(api_key=OPENAI_API_KEY, model="gpt-4o")
+    results = await run_extraction(model, prompt, model_name="gpt_4o")
 """
-
+ 
 import os, json, glob, ast, asyncio, logging
 import pandas as pd
-
+ 
 logger = logging.getLogger(__name__)
 
 # ── Paths ─────────────────────────────────────────────────────
@@ -54,6 +55,18 @@ async def _extract_one(pxd_id, fpath, model, prompt, semaphore, two_pass: bool):
                 metadata = pass2
             else:
                 metadata = pass1
+            
+            # Fetch from external sources (PRIDE, ProteomeXchange, BigBio)
+            # and fill any gaps left by the LLM
+            try:
+                from .fetchers import fetch_all
+                external = await fetch_all(pxd_id)
+                for k, v in external.items():
+                    if not metadata.get(k) or str(metadata[k]).lower() in ["not applicable", "n/a", ""]:
+                        metadata[k] = v
+                logger.info(f"External fetch complete | {pxd_id} | {len(external)} fields")
+            except Exception as e:
+                logger.warning(f"External fetch failed {pxd_id}: {e}")
 
             status = "ok"
         except Exception as e:
