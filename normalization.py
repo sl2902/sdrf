@@ -34,6 +34,7 @@ INSTRUMENT_AC = {
     "synapt xs":             "NT=Synapt XS;AC=MS:1003250",
     "zeno tof 7600":         "NT=ZenoTOF 7600;AC=MS:1003294",
     "ab sciex zeno tof 7600": "NT=ZenoTOF 7600;AC=MS:1003294",
+    "orbitrap exploris 480 mass spectrometer": "NT=Orbitrap Exploris 480;AC=MS:1003028",
 }
 
 CLEAVAGE_AC = {
@@ -82,6 +83,8 @@ MODIFICATION_AC = {
     "tmt6plex":               "NT=TMT6plex;AC=UNIMOD:737;TA=K,N-term;MT=fixed",
     "itraq4plex":             "NT=iTRAQ4plex;AC=UNIMOD:214;TA=K,N-term;MT=fixed",
     "itraq8plex":             "NT=iTRAQ8plex;AC=UNIMOD:730;TA=K,N-term;MT=fixed",
+    "ubiquitin":              "NT=GlyGly;AC=UNIMOD:121;TA=K;MT=variable",
+    "ubiquitination":         "NT=GlyGly;AC=UNIMOD:121;TA=K;MT=variable",
 }
 
 FRAGMENTATION_MAP = {
