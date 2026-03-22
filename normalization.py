@@ -202,6 +202,8 @@ DISEASE_MAP = {
             "wt": "normal",
             "lung carcinoma": "lung cancer",
             "adenocarcinoma of lung": "lung adenocarcinoma",
+            "gfp expression": "normal",
+            "gfp": "normal",        
 }
 
 _PRIDE_PTM_MAP = {
