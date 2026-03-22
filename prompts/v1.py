@@ -19,7 +19,6 @@ def build_user_prompt(title: str, abstract: str, methods: str) -> str:
 {{
   "characteristics[organism]": "Latin binomial species name e.g. 'Homo sapiens', 'Mus musculus'",
   "characteristics[organismpart]": "tissue or organ e.g. 'liver', 'brain cortex', 'plasma', 'erythrocytes', 'cerebrospinal fluid'. If multiple tissues studied, list the most important one here and others in characteristics[organismpart].1 and .2",
-  "characteristics[sex].1": "second sex value if both male and female present, else Not Applicable",
   "characteristics[organismpart].1": "second tissue if present else Not Applicable",
   "characteristics[organismpart].2": "third tissue if present else Not Applicable",
   "characteristics[celltype]": "cell type e.g. 'macrophage', 'neuron'",
@@ -27,6 +26,7 @@ def build_user_prompt(title: str, abstract: str, methods: str) -> str:
   "characteristics[disease]": "disease or condition e.g. 'breast cancer', 'normal', 'uninfected'. If both disease and control present, put control in characteristics[disease].1",
   "characteristics[disease].1": "control/normal condition if present else Not Applicable",
   "characteristics[sex]": "MUST scan entire text for male/female mentions. Return 'male' if only males, 'female' if only females. If BOTH sexes present return 'male' for this field and 'female' in characteristics[sex].1. Examples: 'three healthy women and three healthy men' → male + female. Only Not Applicable if no sex info found.",
+  "characteristics[sex].1": "second sex value if both male and female present, else Not Applicable",
   "characteristics[age]": "age value with unit e.g. '8 weeks', '65 years'",
   "characteristics[developmentalstage]": "e.g. 'adult', 'embryo', 'larva'",
   "characteristics[strain]": "strain name e.g. 'C57BL/6', '3D7'",
