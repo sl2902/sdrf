@@ -195,6 +195,15 @@ ANCESTRY_MAP = {
     "latino": "Hispanic",
 }
 
+DISEASE_MAP = {
+            "wildtype": "normal",
+            "wild type": "normal", 
+            "healthy": "normal",
+            "wt": "normal",
+            "lung carcinoma": "lung cancer",
+            "adenocarcinoma of lung": "lung adenocarcinoma",
+}
+
 _PRIDE_PTM_MAP = {
     "monohydroxylated residue": "Oxidation",
     "iodoacetamide derivatized residue": "Carbamidomethyl",
@@ -302,5 +311,8 @@ def normalize_value(col: str, val: str) -> str:
     
     elif "organismpart" in col:
         return ORGANISM_PART_MAP.get(vl, v)
+    
+    elif "disease" in col and "factorvalue" not in col:
+        return DISEASE_MAP.get(vl, v)
 
     return v
