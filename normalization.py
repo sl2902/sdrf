@@ -203,7 +203,10 @@ DISEASE_MAP = {
             "lung carcinoma": "lung cancer",
             "adenocarcinoma of lung": "lung adenocarcinoma",
             "gfp expression": "normal",
-            "gfp": "normal",        
+            "gfp": "normal", 
+            "mock-infected": "normal",
+            "mock infected": "normal",
+            "uninfected": "normal",       
 }
 
 _PRIDE_PTM_MAP = {
