@@ -108,7 +108,7 @@ def build_verify_prompt(title: str, abstract: str, methods: str, first_pass: dic
 PAPER:
 TITLE: {title}
 ABSTRACT: {abstract}
-METHODS: {methods[:12000]}
+METHODS: {methods[:18000]}
 
 FIRST PASS EXTRACTION:
 {first_pass}
