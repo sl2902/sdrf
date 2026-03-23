@@ -317,7 +317,7 @@ def normalize_value(col: str, val: str) -> str:
     elif "organismpart" in col:
         return ORGANISM_PART_MAP.get(vl, v)
     
-    elif "disease" in col and "factorvalue" not in col:
-        return DISEASE_MAP.get(vl, v)
+    # elif "disease" in col and "factorvalue" not in col:
+    #     return DISEASE_MAP.get(vl, v)
 
     return v
