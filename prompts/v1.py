@@ -97,7 +97,7 @@ TITLE: {title}
 
 ABSTRACT: {abstract}
 
-METHODS: {methods[:12000]}
+METHODS: {methods[:18000]}
 
 Return only the JSON object. No other text."""
 
