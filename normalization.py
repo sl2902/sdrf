@@ -35,12 +35,12 @@ INSTRUMENT_AC = {
     "zeno tof 7600":         "NT=ZenoTOF 7600;AC=MS:1003294",
     "ab sciex zeno tof 7600": "NT=ZenoTOF 7600;AC=MS:1003294",
     "orbitrap exploris 480 mass spectrometer": "NT=Orbitrap Exploris 480;AC=MS:1003028",
-    "q exactive hf hybrid quadrupole-orbitrap": "NT=Q Exactive HF;AC=MS:1002877",
-    "q exactive hf hybrid quadrupole orbitrap": "NT=Q Exactive HF;AC=MS:1002877",
-    "zeno tof 7600": "NT=ZenoTOF 7600;AC=MS:1003294",
-    "zenotof 7600": "NT=ZenoTOF 7600;AC=MS:1003294",
-    "ab sciex zeno tof 7600": "NT=ZenoTOF 7600;AC=MS:1003294",
-    "orbitrap astral mass spectrometer": "NT=Orbitrap Astral;AC=MS:1003378",
+    # "q exactive hf hybrid quadrupole-orbitrap": "NT=Q Exactive HF;AC=MS:1002877",
+    # "q exactive hf hybrid quadrupole orbitrap": "NT=Q Exactive HF;AC=MS:1002877",
+    # "zeno tof 7600": "NT=ZenoTOF 7600;AC=MS:1003294",
+    # "zenotof 7600": "NT=ZenoTOF 7600;AC=MS:1003294",
+    # "ab sciex zeno tof 7600": "NT=ZenoTOF 7600;AC=MS:1003294",
+    # "orbitrap astral mass spectrometer": "NT=Orbitrap Astral;AC=MS:1003378",
 }
 
 CLEAVAGE_AC = {
