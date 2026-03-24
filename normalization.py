@@ -272,6 +272,8 @@ def normalize_value(col: str, val: str) -> str:
     #         return "male|female"
     #     return v
     elif "sex" in col:
+        if "male|female" in vl or "female|male" in vl:
+            return "male"
         if "female" in vl or "woman" in vl or "women" in vl:
             return "female"
         elif "male" in vl or "man" in vl or "men" in vl:
