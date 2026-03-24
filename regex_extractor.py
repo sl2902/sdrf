@@ -111,11 +111,14 @@ def extract_collision_energy(text: str) -> Optional[str]:
         if '%' in orig:
             return f"{val}% NCE"
         return f"{val} NCE"
+    # Only fall back to eV if NCE not found
     m = re.search(r'collision\s+energy\s+(?:of\s+)?(\d+(?:\.\d+)?)\s*(%|ev|nce)?', t)
     if m:
         val = m.group(1)
-        unit = m.group(2) or "NCE"
-        return f"{val} {unit.upper()}"
+        unit = (m.group(2) or "NCE").upper()
+        if unit == "EV":
+            unit = "NCE"  # normalize eV to NCE
+        return f"{val} {unit}"
     return None
 
 
