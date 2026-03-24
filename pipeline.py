@@ -67,6 +67,17 @@ async def _extract_one(pxd_id, fpath, model, prompt, semaphore, two_pass: bool):
                 logger.info(f"External fetch complete | {pxd_id} | {len(external)} fields")
             except Exception as e:
                 logger.warning(f"External fetch failed {pxd_id}: {e}")
+            
+            # Regex extraction — fills gaps for fields with predictable patterns
+            try:
+                from .regex_extractor import run_regex_extraction
+                regex_vals = run_regex_extraction(paper)
+                for k, v in regex_vals.items():
+                    if not metadata.get(k) or str(metadata[k]).lower() in ["not applicable", "n/a", ""]:
+                        metadata[k] = v
+                logger.info(f"Regex extraction complete | {pxd_id} | {len(regex_vals)} fields")
+            except Exception as e:
+                logger.warning(f"Regex extraction failed {pxd_id}: {e}")
 
             status = "ok"
         except Exception as e:
