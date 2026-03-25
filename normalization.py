@@ -1,4 +1,5 @@
 import re
+import json, os
 
 INSTRUMENT_AC = {
     "ltq orbitrap velos":    "AC=MS:1001742;NT=LTQ Orbitrap Velos",
@@ -253,7 +254,13 @@ def normalize_value(col: str, val: str) -> str:
             return "Not Applicable"
         if not any(kw in vl for kw in _MS_KEYWORDS):
             return "Not Applicable"
-        return INSTRUMENT_AC.get(vl, v)
+        return INSTRUMENT_AC.get(vl, _PSI_MS_LOOKUP.get(vl, v))
+    elif "modification" in col and "factorvalue" not in col:
+        vl_clean = re.sub(r'\s*\([^)]*\)', '', vl).strip()
+        return (MODIFICATION_AC.get(vl_clean) or 
+                MODIFICATION_AC.get(vl) or 
+                _UNIMOD_LOOKUP.get(vl_clean) or 
+                _UNIMOD_LOOKUP.get(vl) or v)
 
     elif "fragmentationmethod" in col:
         return FRAGMENTATION_MAP.get(vl, v.upper() if len(v) <= 6 else v)
@@ -328,3 +335,20 @@ def normalize_value(col: str, val: str) -> str:
     #     return DISEASE_MAP.get(vl, v)
 
     return v
+
+
+def _load_obo_lookup(filename: str) -> dict:
+    """Load OBO lookup JSON if available."""
+    paths = [
+        f"/kaggle/input/datasets/laxmsun/sdrf-dir/{filename}",
+        f"/kaggle/working/{filename}",
+    ]
+    for path in paths:
+        if os.path.exists(path):
+            with open(path) as f:
+                return json.load(f)
+    return {}
+
+# Load once at module level
+_PSI_MS_LOOKUP = _load_obo_lookup("psi_ms_lookup.json")
+_UNIMOD_LOOKUP = _load_obo_lookup("unimod_lookup.json")
