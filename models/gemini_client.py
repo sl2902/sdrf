@@ -57,4 +57,11 @@ class GeminiClient(BaseModelClient):
             text = text.split("```")[1]
             if text.startswith("json"):
                 text = text[4:]
-        return json.loads(text)
+        result = json.loads(text)
+        if isinstance(result, list):
+            # Flatten list of dicts into single dict
+            merged = {}
+            for item in result:
+                if isinstance(item, dict):
+                    merged.update(item)
+            return merged
