@@ -297,7 +297,11 @@ def fuzzy_snap(value: str, base_col: str, cutoff: float = 0.82) -> str:
         return value
     if base_col in _FUZZY_SKIP_COLS:
         return value
-    ...
+    valid_set = list(_col_vocab[base_col])
+    if not valid_set:
+        return value
+    matches = difflib.get_close_matches(value, valid_set, n=1, cutoff=cutoff)
+    return matches[0] if matches else value
 
 
 def normalize_value(col: str, val: str) -> str:
