@@ -350,6 +350,6 @@ def _load_obo_lookup(filename: str) -> dict:
                 return json.load(f)
     return {}
 
-# Load once at module level
-_PSI_MS_LOOKUP = _load_obo_lookup("psi_ms_lookup.json")
-_UNIMOD_LOOKUP = _load_obo_lookup("unimod_lookup.json")
+# # Load once at module level
+# _PSI_MS_LOOKUP = _load_obo_lookup("psi_ms_lookup.json")
+# _UNIMOD_LOOKUP = _load_obo_lookup("unimod_lookup.json")
