@@ -79,17 +79,17 @@ async def _extract_one(pxd_id, fpath, model, prompt, semaphore, two_pass: bool):
             except Exception as e:
                 logger.warning(f"Regex extraction failed {pxd_id}: {e}")
             
-            # TF-IDF retrieval — fills gaps using similar training papers
-            try:
-                from .tfidf_retriever import get_retriever
-                retriever = get_retriever(top_k=3)
-                tfidf_vals = retriever.retrieve(pxd_id, paper)
-                for k, v in tfidf_vals.items():
-                    if not metadata.get(k) or str(metadata[k]).lower() in ["not applicable", "n/a", ""]:
-                        metadata[k] = v
-                logger.info(f"TF-IDF retrieval complete | {pxd_id} | {len(tfidf_vals)} fields")
-            except Exception as e:
-                logger.warning(f"TF-IDF retrieval failed {pxd_id}: {e}")
+            # # TF-IDF retrieval — fills gaps using similar training papers
+            # try:
+            #     from .tfidf_retriever import get_retriever
+            #     retriever = get_retriever(top_k=3)
+            #     tfidf_vals = retriever.retrieve(pxd_id, paper)
+            #     for k, v in tfidf_vals.items():
+            #         if not metadata.get(k) or str(metadata[k]).lower() in ["not applicable", "n/a", ""]:
+            #             metadata[k] = v
+            #     logger.info(f"TF-IDF retrieval complete | {pxd_id} | {len(tfidf_vals)} fields")
+            # except Exception as e:
+            #     logger.warning(f"TF-IDF retrieval failed {pxd_id}: {e}")
 
             status = "ok"
         except Exception as e:
