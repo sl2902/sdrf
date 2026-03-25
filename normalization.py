@@ -38,6 +38,8 @@ def fuzzy_snap(value: str, base_col: str, cutoff: float = 0.82) -> str:
     """Snap a value to the closest match in the training vocabulary."""
     if not value or base_col not in _col_vocab:
         return value
+    if base_col in _FUZZY_SKIP_COLS:
+        return value
     valid_set = list(_col_vocab[base_col])
     if not valid_set:
         return value
@@ -283,6 +285,19 @@ _MS_KEYWORDS = [
     "velos", "elite", "impact", "compact", "tof 5600", "tof 6600",
     "zeno", "astral",
 ]
+
+_FUZZY_SKIP_COLS = {
+    "characteristics[disease]",
+    "characteristics[disease].1", 
+    "factorvalue[disease]",
+}
+
+def fuzzy_snap(value: str, base_col: str, cutoff: float = 0.82) -> str:
+    if not value or base_col not in _col_vocab:
+        return value
+    if base_col in _FUZZY_SKIP_COLS:
+        return value
+    ...
 
 
 def normalize_value(col: str, val: str) -> str:
