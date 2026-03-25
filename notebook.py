@@ -28,6 +28,7 @@ model = OpenAIClient(
 
 # ── Cell 4: Choose prompt ─────────────────────────────────────
 from sdrf.prompts import v1 as prompt
+from sdrf.prompts import v2 as prompt2
 
 # ── Cell 5: Run extraction ────────────────────────────────────
 TWO_PASS      = False   # set True to enable verification pass
