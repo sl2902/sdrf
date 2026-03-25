@@ -41,8 +41,8 @@ INSTRUMENT_AC = {
     "q-exactive hf x": "NT=Q Exactive HF-X;AC=MS:1003000",
     "q exactive hf x": "NT=Q Exactive HF-X;AC=MS:1003000",
     "orbitrap elite": "NT=LTQ Orbitrap Elite;AC=MS:1001910",
-    # "q exactive hf hybrid quadrupole-orbitrap": "NT=Q Exactive HF;AC=MS:1002877",
-    # "q exactive hf hybrid quadrupole orbitrap": "NT=Q Exactive HF;AC=MS:1002877",
+    "q exactive hf hybrid quadrupole-orbitrap": "NT=Q Exactive HF;AC=MS:1002877",
+    "q exactive hf hybrid quadrupole orbitrap": "NT=Q Exactive HF;AC=MS:1002877",
     # "zeno tof 7600": "NT=ZenoTOF 7600;AC=MS:1003294",
     # "zenotof 7600": "NT=ZenoTOF 7600;AC=MS:1003294",
     # "ab sciex zeno tof 7600": "NT=ZenoTOF 7600;AC=MS:1003294",
@@ -254,13 +254,14 @@ def normalize_value(col: str, val: str) -> str:
             return "Not Applicable"
         if not any(kw in vl for kw in _MS_KEYWORDS):
             return "Not Applicable"
-        return INSTRUMENT_AC.get(vl, _PSI_MS_LOOKUP.get(vl, v))
-    elif "modification" in col and "factorvalue" not in col:
-        vl_clean = re.sub(r'\s*\([^)]*\)', '', vl).strip()
-        return (MODIFICATION_AC.get(vl_clean) or 
-                MODIFICATION_AC.get(vl) or 
-                _UNIMOD_LOOKUP.get(vl_clean) or 
-                _UNIMOD_LOOKUP.get(vl) or v)
+        return INSTRUMENT_AC.get(vl, v)
+    # not working; OBO lookup uses lowercase matching
+    # elif "modification" in col and "factorvalue" not in col:
+    #     vl_clean = re.sub(r'\s*\([^)]*\)', '', vl).strip()
+    #     return (MODIFICATION_AC.get(vl_clean) or 
+    #             MODIFICATION_AC.get(vl) or 
+    #             _UNIMOD_LOOKUP.get(vl_clean) or 
+    #             _UNIMOD_LOOKUP.get(vl) or v)
 
     elif "fragmentationmethod" in col:
         return FRAGMENTATION_MAP.get(vl, v.upper() if len(v) <= 6 else v)
