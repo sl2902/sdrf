@@ -242,14 +242,20 @@ def merge_results(*result_dicts) -> dict:
         if not base:
             continue
 
-        merged_meta = dict(base["metadata"])
+        meta = base["metadata"]
+        if isinstance(meta, list):
+            meta = meta[0] if meta else {}
+        merged_meta = dict(meta)
 
         # Fill gaps from remaining dicts
         for r in result_dicts[1:]:
             entry = r.get(pxd, {})
             if entry.get("status") != "ok":
                 continue
-            for col, val in entry["metadata"].items():
+            entry_meta = entry["metadata"]
+            if isinstance(entry_meta, list):
+                entry_meta = entry_meta[0] if entry_meta else {}
+            for col, val in entry_meta.items():
                 if merged_meta.get(col, "Not Applicable") in ["Not Applicable", "N/A", "", None]:
                     if val and str(val).lower() not in ["not applicable", "n/a", ""]:
                         merged_meta[col] = val
