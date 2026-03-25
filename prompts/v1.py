@@ -97,7 +97,7 @@ TITLE: {title}
 
 ABSTRACT: {abstract}
 
-METHODS: {methods[:24000]}
+METHODS: {methods[:30000]}
 
 Return only the JSON object. No other text."""
 
@@ -108,7 +108,7 @@ def build_verify_prompt(title: str, abstract: str, methods: str, first_pass: dic
 PAPER:
 TITLE: {title}
 ABSTRACT: {abstract}
-METHODS: {methods[:24000]}
+METHODS: {methods[:30000]}
 
 FIRST PASS EXTRACTION:
 {first_pass}
