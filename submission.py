@@ -154,6 +154,12 @@ def build_submission(results: dict, two_pass: bool = False) -> pd.DataFrame:
         pxd_id = cache_key.replace("_pass2", "")
 
         metadata = result["metadata"]
+        # Handle case where model returned a list of dicts
+        if isinstance(metadata, list):
+            if metadata:
+                metadata = metadata[0]
+            else:
+                continue
         mask     = sub_df["PXD"] == pxd_id
 
         if not mask.any():
