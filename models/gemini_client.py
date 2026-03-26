@@ -64,4 +64,6 @@ class GeminiClient(BaseModelClient):
             for item in result:
                 if isinstance(item, dict):
                     merged.update(item)
-        return merged
+            return merged
+        return result
+
