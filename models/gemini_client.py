@@ -53,11 +53,13 @@ class GeminiClient(BaseModelClient):
         )
         text = response.text.strip()
         # Strip markdown fences if present
+        logger.debug(f"Extracton from Gemini {len(text)}")
         if text.startswith("```"):
             text = text.split("```")[1]
             if text.startswith("json"):
                 text = text[4:]
         result = json.loads(text)
+        logger.debug(f"PXD file {result}")
         if isinstance(result, list):
             # Flatten list of dicts into single dict
             merged = {}
