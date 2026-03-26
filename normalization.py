@@ -8,43 +8,43 @@ from collections import defaultdict
 # ── Training vocabulary for fuzzy snapping ────────────────────
 # Built once at module load time from training SDRFs
  
-_col_vocab: dict = {}
+# _col_vocab: dict = {}
  
-def _build_col_vocab():
-    global _col_vocab
-    train_dir = "/kaggle/input/competitions/harmonizing-the-data-of-your-data/Training_SDRFs/HarmonizedFiles"
-    if not os.path.exists(train_dir):
-        return
-    na_vals = {"not applicable", "not applicable", "na", "nan", "textspan", ""}
-    vocab = defaultdict(set)
-    for fn in os.listdir(train_dir):
-        if not fn.endswith(".csv"):
-            continue
-        try:
-            df = pd.read_csv(os.path.join(train_dir, fn), dtype=str, low_memory=False)
-            for col in df.columns:
-                base_col = re.sub(r'\.\d+$', '', col.strip().lower())
-                vals = df[col].dropna().astype(str)
-                vals = vals[~vals.str.lower().isin(na_vals)]
-                vocab[base_col].update(vals.tolist())
-        except Exception:
-            pass
-    _col_vocab = dict(vocab)
+# def _build_col_vocab():
+#     global _col_vocab
+#     train_dir = "/kaggle/input/competitions/harmonizing-the-data-of-your-data/Training_SDRFs/HarmonizedFiles"
+#     if not os.path.exists(train_dir):
+#         return
+#     na_vals = {"not applicable", "not applicable", "na", "nan", "textspan", ""}
+#     vocab = defaultdict(set)
+#     for fn in os.listdir(train_dir):
+#         if not fn.endswith(".csv"):
+#             continue
+#         try:
+#             df = pd.read_csv(os.path.join(train_dir, fn), dtype=str, low_memory=False)
+#             for col in df.columns:
+#                 base_col = re.sub(r'\.\d+$', '', col.strip().lower())
+#                 vals = df[col].dropna().astype(str)
+#                 vals = vals[~vals.str.lower().isin(na_vals)]
+#                 vocab[base_col].update(vals.tolist())
+#         except Exception:
+#             pass
+#     _col_vocab = dict(vocab)
  
-_build_col_vocab()
+# _build_col_vocab()
  
  
-def fuzzy_snap(value: str, base_col: str, cutoff: float = 0.82) -> str:
-    """Snap a value to the closest match in the training vocabulary."""
-    if not value or base_col not in _col_vocab:
-        return value
-    if base_col in _FUZZY_SKIP_COLS:
-        return value
-    valid_set = list(_col_vocab[base_col])
-    if not valid_set:
-        return value
-    matches = difflib.get_close_matches(value, valid_set, n=1, cutoff=cutoff)
-    return matches[0] if matches else value
+# def fuzzy_snap(value: str, base_col: str, cutoff: float = 0.82) -> str:
+#     """Snap a value to the closest match in the training vocabulary."""
+#     if not value or base_col not in _col_vocab:
+#         return value
+#     if base_col in _FUZZY_SKIP_COLS:
+#         return value
+#     valid_set = list(_col_vocab[base_col])
+#     if not valid_set:
+#         return value
+#     matches = difflib.get_close_matches(value, valid_set, n=1, cutoff=cutoff)
+#     return matches[0] if matches else value
 
 INSTRUMENT_AC = {
     "ltq orbitrap velos":    "AC=MS:1001742;NT=LTQ Orbitrap Velos",
@@ -292,16 +292,16 @@ _FUZZY_SKIP_COLS = {
     "factorvalue[disease]",
 }
 
-def fuzzy_snap(value: str, base_col: str, cutoff: float = 0.82) -> str:
-    if not value or base_col not in _col_vocab:
-        return value
-    if base_col in _FUZZY_SKIP_COLS:
-        return value
-    valid_set = list(_col_vocab[base_col])
-    if not valid_set:
-        return value
-    matches = difflib.get_close_matches(value, valid_set, n=1, cutoff=cutoff)
-    return matches[0] if matches else value
+# def fuzzy_snap(value: str, base_col: str, cutoff: float = 0.82) -> str:
+#     if not value or base_col not in _col_vocab:
+#         return value
+#     if base_col in _FUZZY_SKIP_COLS:
+#         return value
+#     valid_set = list(_col_vocab[base_col])
+#     if not valid_set:
+#         return value
+#     matches = difflib.get_close_matches(value, valid_set, n=1, cutoff=cutoff)
+#     return matches[0] if matches else value
 
 
 def normalize_value(col: str, val: str) -> str:
@@ -405,17 +405,17 @@ def normalize_value(col: str, val: str) -> str:
     # return snapped
 
 
-def _load_obo_lookup(filename: str) -> dict:
-    """Load OBO lookup JSON if available."""
-    paths = [
-        f"/kaggle/input/datasets/laxmsun/sdrf-dir/{filename}",
-        f"/kaggle/working/{filename}",
-    ]
-    for path in paths:
-        if os.path.exists(path):
-            with open(path) as f:
-                return json.load(f)
-    return {}
+# def _load_obo_lookup(filename: str) -> dict:
+#     """Load OBO lookup JSON if available."""
+#     paths = [
+#         f"/kaggle/input/datasets/laxmsun/sdrf-dir/{filename}",
+#         f"/kaggle/working/{filename}",
+#     ]
+#     for path in paths:
+#         if os.path.exists(path):
+#             with open(path) as f:
+#                 return json.load(f)
+#     return {}
 
 # # Load once at module level
 # _PSI_MS_LOOKUP = _load_obo_lookup("psi_ms_lookup.json")
