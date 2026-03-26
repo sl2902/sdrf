@@ -394,15 +394,15 @@ def normalize_value(col: str, val: str) -> str:
     elif "organismpart" in col:
         return ORGANISM_PART_MAP.get(vl, v)
     
-    # elif "disease" in col and "factorvalue" not in col:
-    #     return DISEASE_MAP.get(vl, v)
+    elif "disease" in col and "factorvalue" not in col:
+        return DISEASE_MAP.get(vl, v)
 
-    # return v
+    return v
 
-    # Final step — snap to closest training vocabulary value
-    base_col = re.sub(r'\.\d+$', '', col).strip()
-    snapped = fuzzy_snap(v, base_col, cutoff=0.82)
-    return snapped
+    # # Final step — snap to closest training vocabulary value
+    # base_col = re.sub(r'\.\d+$', '', col).strip()
+    # snapped = fuzzy_snap(v, base_col, cutoff=0.82)
+    # return snapped
 
 
 def _load_obo_lookup(filename: str) -> dict:
