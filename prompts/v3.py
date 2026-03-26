@@ -18,12 +18,9 @@ def build_user_prompt(title: str, abstract: str, methods: str) -> str:
 
 {{
   "characteristics[organism]": "Latin binomial species name e.g. 'Homo sapiens', 'Mus musculus'",
-  "characteristics[organismpart]": "tissue or organ where samples were physically collected. Extract ONLY what is explicitly stated as a sample source in the paper. Do NOT infer sub-regions, related tissues, or body fluids unless they are explicitly named as distinct sample sources. If the paper says 'brain tissue' return 'brain' — do NOT add specific brain regions. If the paper says 'heart left ventricle' return 'heart left ventricle' — do NOT generalize to 'heart'. Match the paper's exact wording and granularity. e.g. 'liver', 'blood plasma', 'cerebrospinal fluid', 'Ascending Colon'",
-  "characteristics[organismpart].1": "second distinct sample tissue if explicitly stated, else Not Applicable",
-  "characteristics[organismpart].2": "third distinct sample tissue if explicitly stated, else Not Applicable",
-  "characteristics[organismpart].3": "fourth distinct sample tissue if explicitly stated, else Not Applicable",
-  "characteristics[organismpart].4": "fifth distinct sample tissue if explicitly stated, else Not Applicable",
-  "characteristics[organismpart].5": "sixth distinct sample tissue if explicitly stated, else Not Applicable",
+  "characteristics[organismpart]": "tissue or organ e.g. 'liver', 'brain cortex', 'plasma', 'erythrocytes', 'cerebrospinal fluid'. If multiple tissues studied, list the most important one here and others in characteristics[organismpart].1 and .2",
+  "characteristics[organismpart].1": "second tissue if present else Not Applicable",
+  "characteristics[organismpart].2": "third tissue if present else Not Applicable",
   "characteristics[celltype]": "cell type e.g. 'macrophage', 'neuron'",
   "characteristics[cellline]": "cell line name e.g. 'HeLa', 'HEK293', 'MCF7'",
   "characteristics[disease]": "disease or condition e.g. 'breast cancer', 'normal', 'uninfected'. If both disease and control present, put control in characteristics[disease].1",
