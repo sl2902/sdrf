@@ -22,7 +22,7 @@ class GeminiClient(BaseModelClient):
     def __init__(
             self, 
             project: str, 
-            # credentials: service_account.Credentials,
+            credentials: service_account.Credentials = None,
             location: str = "us-central1",
             model: str = "gemini-2.5-pro", 
             temperature: float = 0):
@@ -30,7 +30,7 @@ class GeminiClient(BaseModelClient):
             vertexai=True,
             project=project,
             location=location,
-            # credentials=credentials,
+            credentials=credentials,
         )
         self.model = model
         self.temperature = temperature
