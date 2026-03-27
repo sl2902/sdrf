@@ -1,7 +1,7 @@
 """
 Filename Parser — Per-file metadata extraction from raw filenames.
 Lightweight LLM call: no paper text, just filenames + experiment summary.
-Returns per-file overrides for fraction, replicate, label, condition.
+Returns per-file overrides for fraction, replicate, label.
 """
 
 import json
@@ -29,7 +29,6 @@ EXPERIMENT CONTEXT:
 - Labeling: {label}
 - Organism: {organism}
 - Instrument: {instrument}
-- Disease/Condition: {disease}
 
 RAW FILENAMES:
 {files_str}
@@ -38,13 +37,12 @@ For each filename, extract any of these values if encoded in the filename:
 - "fraction": fraction number (look for patterns like F1, Frac01, fraction_12, _F12_, fr12). Return just the integer as a string e.g. "1", "12".
 - "replicate": biological replicate number (look for BR1, Rep2, bio_rep_3, biorep1, _R1_). Return just the integer e.g. "1", "2".
 - "label": TMT/iTRAQ channel if multiplexed (look for TMT126, TMT127N, TMT131C, iTRAQ114, 126C, 127N). Return the full channel name e.g. "TMT126", "TMT127N".
-- "condition": experimental condition (look for KO, WT, CTRL, Control, Treated, Tumor, Normal, Disease, Healthy, Infected, Mock). Return the condition as-is from the filename.
 
 Return a JSON object where keys are filenames and values are objects with only the fields you can confidently extract. Omit filenames where nothing is parseable. Example:
 
 {{
   "sample1_F3_BR2.raw": {{"fraction": "3", "replicate": "2"}},
-  "TMT126_Control_F1.raw": {{"fraction": "1", "label": "TMT126", "condition": "Control"}}
+  "TMT126_Control_F1.raw": {{"fraction": "1", "label": "TMT126"}}
 }}
 
 Only include fields you are confident about. Do NOT guess. If a filename has no parseable metadata, omit it entirely."""
@@ -53,7 +51,7 @@ Only include fields you are confident about. Do NOT guess. If a filename has no 
 async def parse_filenames(raw_files: list, global_metadata: dict, model) -> dict:
     """
     Parse filenames using a lightweight LLM call.
-    Returns dict: {filename: {fraction, replicate, label, condition}}
+    Returns dict: {filename: {fraction, replicate, label}}
     """
     if not raw_files:
         return {}
@@ -67,7 +65,7 @@ async def parse_filenames(raw_files: list, global_metadata: dict, model) -> dict
             return {}
 
         # Validate structure — each value should be a dict with known keys
-        valid_keys = {"fraction", "replicate", "label", "condition"}
+        valid_keys = {"fraction", "replicate", "label"}
         cleaned = {}
         for fname, overrides in result.items():
             if not isinstance(overrides, dict):
