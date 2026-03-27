@@ -325,8 +325,8 @@ def normalize_value(col: str, val: str) -> str:
     #             _UNIMOD_LOOKUP.get(vl_clean) or 
     #             _UNIMOD_LOOKUP.get(vl) or v)
 
-    elif "fragmentationmethod" in col:
-        return FRAGMENTATION_MAP.get(vl, v.upper() if len(v) <= 6 else v)
+    # elif "fragmentationmethod" in col:
+    #     return FRAGMENTATION_MAP.get(vl, v.upper() if len(v) <= 6 else v)
 
     elif "modification" in col and "factorvalue" not in col:
         vl_clean = re.sub(r'\s*\([^)]*\)', '', vl).strip()
@@ -394,8 +394,8 @@ def normalize_value(col: str, val: str) -> str:
     elif "organismpart" in col:
         return ORGANISM_PART_MAP.get(vl, v)
     
-    elif "disease" in col and "factorvalue" not in col:
-        return DISEASE_MAP.get(vl, v)
+    # elif "disease" in col and "factorvalue" not in col:
+    #     return DISEASE_MAP.get(vl, v)
 
     return v
 
