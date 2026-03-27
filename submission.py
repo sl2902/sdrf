@@ -232,19 +232,19 @@ def build_submission(results: dict, two_pass: bool = False) -> pd.DataFrame:
             if label_col and "label" in overrides:
                 sub_df.at[idx, label_col] = normalize_value("characteristics[label]", overrides["label"])
  
-            # Condition → disease (only override if per-file has it)
-            if disease_col and "condition" in overrides:
-                condition = overrides["condition"]
-                cond_lower = condition.lower()
-                # Map common filename tokens to disease values
-                if cond_lower in ("wt", "ctrl", "control", "normal", "healthy", "mock"):
-                    sub_df.at[idx, disease_col] = "normal"
-                elif cond_lower in ("ko", "treated", "tumor", "disease", "infected"):
-                    # Keep the global disease value — condition just confirms it's a disease sample
-                    pass
-                else:
-                    # Unknown condition — use as-is
-                    sub_df.at[idx, disease_col] = condition
+            # # Condition → disease (only override if per-file has it)
+            # if disease_col and "condition" in overrides:
+            #     condition = overrides["condition"]
+            #     cond_lower = condition.lower()
+            #     # Map common filename tokens to disease values
+            #     if cond_lower in ("wt", "ctrl", "control", "normal", "healthy", "mock"):
+            #         sub_df.at[idx, disease_col] = "normal"
+            #     elif cond_lower in ("ko", "treated", "tumor", "disease", "infected"):
+            #         # Keep the global disease value — condition just confirms it's a disease sample
+            #         pass
+            #     else:
+            #         # Unknown condition — use as-is
+            #         sub_df.at[idx, disease_col] = condition
 
     # Global mode fallback — fill remaining Not Applicable cells
     # Only for high-frequency columns (>75% of training papers have a value)
