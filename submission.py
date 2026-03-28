@@ -192,45 +192,45 @@ def build_submission(results: dict, two_pass: bool = False) -> pd.DataFrame:
             if target and target in sub_df.columns:
                 sub_df.loc[mask, target] = normalize_value(col_key, value)
 
-        # # Assign fractionidentifier and biologicalreplicate per row
-        # frac_col = col_map.get("comment[fractionidentifier]")
-        # brep_col = col_map.get("characteristics[biologicalreplicate]")
-        # indices  = sub_df.index[mask].tolist()
-        # for rank, idx in enumerate(indices):
-        #     if frac_col:
-        #         sub_df.at[idx, frac_col] = str((rank % n_fractions) + 1)
-        #     if brep_col:
-        #         sub_df.at[idx, brep_col] = str((rank % n_replicates) + 1)
-
-        # Assign per-file overrides, then fall back to modulo
-        per_file = result.get("per_file", {})
-        frac_col  = col_map.get("comment[fractionidentifier]")
-        brep_col  = col_map.get("characteristics[biologicalreplicate]")
-        label_col = col_map.get("characteristics[label]")
-        disease_col = col_map.get("characteristics[disease]")
- 
-        indices = sub_df.index[mask].tolist()
+        # Assign fractionidentifier and biologicalreplicate per row
+        frac_col = col_map.get("comment[fractionidentifier]")
+        brep_col = col_map.get("characteristics[biologicalreplicate]")
+        indices  = sub_df.index[mask].tolist()
         for rank, idx in enumerate(indices):
-            raw_file = sub_df.at[idx, "Raw Data File"]
-            overrides = per_file.get(raw_file, {})
- 
-            # Fraction
             if frac_col:
-                if "fraction" in overrides:
-                    sub_df.at[idx, frac_col] = overrides["fraction"]
-                else:
-                    sub_df.at[idx, frac_col] = str((rank % n_fractions) + 1)
- 
-            # Biological replicate
+                sub_df.at[idx, frac_col] = str((rank % n_fractions) + 1)
             if brep_col:
-                if "replicate" in overrides:
-                    sub_df.at[idx, brep_col] = overrides["replicate"]
-                else:
-                    sub_df.at[idx, brep_col] = str((rank % n_replicates) + 1)
+                sub_df.at[idx, brep_col] = str((rank % n_replicates) + 1)
+
+        # # Assign per-file overrides, then fall back to modulo
+        # per_file = result.get("per_file", {})
+        # frac_col  = col_map.get("comment[fractionidentifier]")
+        # brep_col  = col_map.get("characteristics[biologicalreplicate]")
+        # label_col = col_map.get("characteristics[label]")
+        # disease_col = col_map.get("characteristics[disease]")
  
-            # Label channel (only override if per-file has it)
-            if label_col and "label" in overrides:
-                sub_df.at[idx, label_col] = normalize_value("characteristics[label]", overrides["label"])
+        # indices = sub_df.index[mask].tolist()
+        # for rank, idx in enumerate(indices):
+        #     raw_file = sub_df.at[idx, "Raw Data File"]
+        #     overrides = per_file.get(raw_file, {})
+ 
+        #     # Fraction
+        #     if frac_col:
+        #         if "fraction" in overrides:
+        #             sub_df.at[idx, frac_col] = overrides["fraction"]
+        #         else:
+        #             sub_df.at[idx, frac_col] = str((rank % n_fractions) + 1)
+ 
+        #     # Biological replicate
+        #     if brep_col:
+        #         if "replicate" in overrides:
+        #             sub_df.at[idx, brep_col] = overrides["replicate"]
+        #         else:
+        #             sub_df.at[idx, brep_col] = str((rank % n_replicates) + 1)
+ 
+        #     # Label channel (only override if per-file has it)
+        #     if label_col and "label" in overrides:
+        #         sub_df.at[idx, label_col] = normalize_value("characteristics[label]", overrides["label"])
  
             # # Condition → disease (only override if per-file has it)
             # if disease_col and "condition" in overrides:
@@ -291,35 +291,35 @@ def merge_results(*result_dicts) -> dict:
             meta = meta[0] if meta else {}
         merged_meta = dict(meta)
 
-        # # Fill gaps from remaining dicts
-        # for r in result_dicts[1:]:
-        #     entry = r.get(pxd, {})
-        #     if entry.get("status") != "ok":
-        #         continue
-        #     entry_meta = entry["metadata"]
-        #     if isinstance(entry_meta, list):
-        #         entry_meta = entry_meta[0] if entry_meta else {}
-        #     for col, val in entry_meta.items():
-        #         if merged_meta.get(col, "Not Applicable") in ["Not Applicable", "N/A", "", None]:
-        #             if val and str(val).lower() not in ["not applicable", "n/a", ""]:
-        #                 merged_meta[col] = val
-
-        # Merge per_file from all sources
-        merged_per_file = {}
+        # Fill gaps from remaining dicts
         for r in result_dicts[1:]:
             entry = r.get(pxd, {})
-            if entry.get("status") == "ok" and entry.get("per_file"):
-                for fname, overrides in entry["per_file"].items():
-                    if fname not in merged_per_file:
-                        merged_per_file[fname] = {}
-                    for k, v in overrides.items():
-                        if k not in merged_per_file[fname]:
-                            merged_per_file[fname][k] = v
+            if entry.get("status") != "ok":
+                continue
+            entry_meta = entry["metadata"]
+            if isinstance(entry_meta, list):
+                entry_meta = entry_meta[0] if entry_meta else {}
+            for col, val in entry_meta.items():
+                if merged_meta.get(col, "Not Applicable") in ["Not Applicable", "N/A", "", None]:
+                    if val and str(val).lower() not in ["not applicable", "n/a", ""]:
+                        merged_meta[col] = val
+
+        # # Merge per_file from all sources
+        # merged_per_file = {}
+        # for r in result_dicts[1:]:
+        #     entry = r.get(pxd, {})
+        #     if entry.get("status") == "ok" and entry.get("per_file"):
+        #         for fname, overrides in entry["per_file"].items():
+        #             if fname not in merged_per_file:
+        #                 merged_per_file[fname] = {}
+        #             for k, v in overrides.items():
+        #                 if k not in merged_per_file[fname]:
+        #                     merged_per_file[fname][k] = v
 
         merged[pxd] = {
             "metadata": merged_meta,
             "raw_files": base["raw_files"],
-            "per_file": merged_per_file,
+            # "per_file": merged_per_file,
             "status": "ok",
         }
 
