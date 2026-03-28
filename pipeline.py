@@ -91,14 +91,14 @@ async def _extract_one(pxd_id, fpath, model, prompt, semaphore, two_pass: bool):
             # except Exception as e:
             #     logger.warning(f"TF-IDF retrieval failed {pxd_id}: {e}")
 
-             # Filename parsing — lightweight LLM call for per-file overrides
-            per_file = {}
-            try:
-                from .filename_parser import parse_filenames
-                per_file = await parse_filenames(raw_files, metadata, model)
-                logger.info(f"Filename parsing complete | {pxd_id} | {len(per_file)} files with overrides")
-            except Exception as e:
-                logger.warning(f"Filename parsing failed {pxd_id}: {e}")
+            #  # Filename parsing — lightweight LLM call for per-file overrides
+            # per_file = {}
+            # try:
+            #     from .filename_parser import parse_filenames
+            #     per_file = await parse_filenames(raw_files, metadata, model)
+            #     logger.info(f"Filename parsing complete | {pxd_id} | {len(per_file)} files with overrides")
+            # except Exception as e:
+            #     logger.warning(f"Filename parsing failed {pxd_id}: {e}")
 
             status = "ok"
         except Exception as e:
@@ -109,7 +109,7 @@ async def _extract_one(pxd_id, fpath, model, prompt, semaphore, two_pass: bool):
         return pxd_id, {
             "metadata": metadata,
             "raw_files": raw_files,
-            "per_file": per_file,
+            # "per_file": per_file,
             "status": status,
         }
 
