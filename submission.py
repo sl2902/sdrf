@@ -191,6 +191,13 @@ def build_submission(results: dict, two_pass: bool = False) -> pd.DataFrame:
                 target = col_map.get(base)
             if target and target in sub_df.columns:
                 sub_df.loc[mask, target] = normalize_value(col_key, value)
+        
+        # Default IonizationType if still empty
+        ioni_col = col_map.get("comment[ionizationtype]")
+        if ioni_col:
+            ioni_vals = sub_df.loc[mask, ioni_col].unique()
+            if all(str(v).strip() in ["Not Applicable", "nan", ""] for v in ioni_vals):
+                sub_df.loc[mask, ioni_col] = "nanoESI"
 
         # Assign fractionidentifier and biologicalreplicate per row
         frac_col = col_map.get("comment[fractionidentifier]")
