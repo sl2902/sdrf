@@ -76,7 +76,7 @@ def build_user_prompt(title: str, abstract: str, methods: str) -> str:
   "comment[enrichmentmethod]": "e.g. 'IMAC', 'TiO2', 'enrichment of phosphorylated Protein', else Not Applicable",
   "comment[separation]": "e.g. 'LC-MS/MS', 'nano-LC', 'Reversed-phase chromatography'",
   "comment[gradienttime]": "e.g. '120 min', '90 min'",
-  "comment[ionizationtype]": "e.g. 'ESI', 'nanospray'",
+  "comment[ionizationtype]": "MUST be one of: 'nanoESI', 'ESI', 'MALDI'",
   "comment[acquisitionmethod]": "e.g. 'DDA', 'DIA', 'PRM'",
   "comment[numberofmissedcleavages]": "integer e.g. '2'",
   "comment[fractionidentifier]": "number of LC fractions per sample as integer. '1' if unfractionated.",

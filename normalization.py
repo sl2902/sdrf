@@ -422,6 +422,13 @@ def normalize_value(col: str, val: str) -> str:
     
     # elif "disease" in col and "factorvalue" not in col:
     #     return DISEASE_MAP.get(vl, v)
+    elif "ionizationtype" in col:
+        if "nanospray" in vl or "nano-esi" in vl or "nanoelectrospray" in vl or "nano esi" in vl:
+            return "nanoESI"
+        if "electrospray" in vl or vl == "esi":
+            return "ESI"
+        if "maldi" in vl:
+            return "MALDI"
 
     return v
 
