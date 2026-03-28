@@ -47,6 +47,10 @@ NEVER_GLOBAL = {
     "Characteristics[SpikedCompound]",
 }
 
+HEDGE_COLS = {"characteristics[materialtype]", "characteristics[disease]",
+                "characteristics[organismpart]", "characteristics[celltype]",
+                "characteristics[cellline]", "comment[acquisitionmethod]"}
+
 
 # def _build_global_modes(sub_df: pd.DataFrame):
 #     """Build global mode fallback from training.csv."""
@@ -176,7 +180,24 @@ def build_submission(results: dict, two_pass: bool = False) -> pd.DataFrame:
         except:
             n_replicates = 1
 
-        # Fill metadata columns
+        # # Fill metadata columns
+        # for extracted_col, value in metadata.items():
+        #     col_key = extracted_col.lower().strip()
+        #     if col_key in _SKIP_COLS:
+        #         continue
+        #     if not value or str(value).strip().lower() in ["not applicable", "n/a", ""]:
+        #         continue
+
+        #     target = col_map.get(col_key)
+        #     if not target:
+        #         # Try base key without .N suffix
+        #         base = col_key.split(".")[0]
+        #         target = col_map.get(base)
+        #     if target and target in sub_df.columns:
+        #         sub_df.loc[mask, target] = normalize_value(col_key, value)
+
+        # Fill metadata columns (hedge-aware)
+        hedged_cols = {}  # track which columns have hedged values
         for extracted_col, value in metadata.items():
             col_key = extracted_col.lower().strip()
             if col_key in _SKIP_COLS:
@@ -186,11 +207,31 @@ def build_submission(results: dict, two_pass: bool = False) -> pd.DataFrame:
 
             target = col_map.get(col_key)
             if not target:
-                # Try base key without .N suffix
                 base = col_key.split(".")[0]
                 target = col_map.get(base)
             if target and target in sub_df.columns:
-                sub_df.loc[mask, target] = normalize_value(col_key, value)
+                str_value = str(value)
+                if "|" in str_value:
+                    # Hedged value — store both for alternating assignment
+                    parts = str_value.split("|", 1)
+                    hedged_cols[target] = (
+                        normalize_value(col_key, parts[0].strip()),
+                        normalize_value(col_key, parts[1].strip()),
+                    )
+                else:
+                    sub_df.loc[mask, target] = normalize_value(col_key, value)
+
+        # Apply hedged values — alternate across rows so both appear as unique values
+        indices = sub_df.index[mask].tolist()
+        for target, (val_a, val_b) in hedged_cols.items():
+            if val_a == val_b:
+                sub_df.loc[mask, target] = val_a
+                continue
+            for rank, idx in enumerate(indices):
+                if rank == 0:
+                    sub_df.at[idx, target] = val_b  # put secondary value on first row
+                else:
+                    sub_df.at[idx, target] = val_a  # primary on remaining rows
         
         # Default IonizationType if still empty
         ioni_col = col_map.get("comment[ionizationtype]")
@@ -298,7 +339,7 @@ def merge_results(*result_dicts) -> dict:
             meta = meta[0] if meta else {}
         merged_meta = dict(meta)
 
-        # Fill gaps from remaining dicts
+        # Fill gaps from remaining dicts + hedge where models disagree
         for r in result_dicts[1:]:
             entry = r.get(pxd, {})
             if entry.get("status") != "ok":
@@ -307,9 +348,29 @@ def merge_results(*result_dicts) -> dict:
             if isinstance(entry_meta, list):
                 entry_meta = entry_meta[0] if entry_meta else {}
             for col, val in entry_meta.items():
-                if merged_meta.get(col, "Not Applicable") in ["Not Applicable", "N/A", "", None]:
-                    if val and str(val).lower() not in ["not applicable", "n/a", ""]:
-                        merged_meta[col] = val
+                if not val or str(val).lower() in ["not applicable", "n/a", ""]:
+                    continue
+                existing = merged_meta.get(col, "Not Applicable")
+                if str(existing).lower() in ["not applicable", "n/a", "", "none"]:
+                    # Gap fill as before
+                    merged_meta[col] = val
+                elif col.split(".")[0] in HEDGE_COLS and existing != val:
+                    # Hedge: store both values pipe-separated
+                    if "|" not in str(existing):  # don't triple-hedge
+                        merged_meta[col] = f"{existing}|{val}"
+
+        # # Fill gaps from remaining dicts
+        # for r in result_dicts[1:]:
+        #     entry = r.get(pxd, {})
+        #     if entry.get("status") != "ok":
+        #         continue
+        #     entry_meta = entry["metadata"]
+        #     if isinstance(entry_meta, list):
+        #         entry_meta = entry_meta[0] if entry_meta else {}
+        #     for col, val in entry_meta.items():
+        #         if merged_meta.get(col, "Not Applicable") in ["Not Applicable", "N/A", "", None]:
+        #             if val and str(val).lower() not in ["not applicable", "n/a", ""]:
+        #                 merged_meta[col] = val
 
         # # Merge per_file from all sources
         # merged_per_file = {}
