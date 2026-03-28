@@ -286,6 +286,31 @@ DISEASE_MAP = {
             # "uninfected": "normal",       
 }
 
+SEPARATION_MAP = {
+    "reversed-phase chromatography":     "AC=PRIDE:0000563;NT=Reversed-phase chromatography",
+    "reverse phase chromatography":      "AC=PRIDE:0000563;NT=Reversed-phase chromatography",
+    "reversed phase chromatography":     "AC=PRIDE:0000563;NT=Reversed-phase chromatography",
+    "rplc":                              "AC=PRIDE:0000563;NT=Reversed-phase chromatography",
+    "rp-lc":                             "AC=PRIDE:0000563;NT=Reversed-phase chromatography",
+    "c18":                               "AC=PRIDE:0000563;NT=Reversed-phase chromatography",
+    "nano-lc":                           "AC=PRIDE:0000563;NT=Reversed-phase chromatography",
+    "nanolc":                            "AC=PRIDE:0000563;NT=Reversed-phase chromatography",
+    "nano lc":                           "AC=PRIDE:0000563;NT=Reversed-phase chromatography",
+    "nano-lc-ms/ms":                     "AC=PRIDE:0000563;NT=Reversed-phase chromatography",
+    "nanolc-ms/ms":                      "AC=PRIDE:0000563;NT=Reversed-phase chromatography",
+    "nano lc-ms/ms":                     "AC=PRIDE:0000563;NT=Reversed-phase chromatography",
+    "lc-ms/ms":                          "AC=PRIDE:0000563;NT=Reversed-phase chromatography",
+    "lc/ms":                             "AC=PRIDE:0000563;NT=Reversed-phase chromatography",
+    "lcms":                              "AC=PRIDE:0000563;NT=Reversed-phase chromatography",
+    "lc-ms":                             "AC=PRIDE:0000563;NT=Reversed-phase chromatography",
+    "liquid phase chromatography":       "AC=PRIDE:0000563;NT=Reversed-phase chromatography",
+    "hplc":                              "NT=High-performance liquid chromatography;AC=PRIDE:0000565",
+    "high-performance liquid chromatography": "NT=High-performance liquid chromatography;AC=PRIDE:0000565",
+    "high performance liquid chromatography": "NT=High-performance liquid chromatography;AC=PRIDE:0000565",
+    "sax":                               "AC=PRIDE:0000558;NT=SAX",
+    "strong anion exchange":             "AC=PRIDE:0000558;NT=SAX",
+}
+
 _PRIDE_PTM_MAP = {
     "monohydroxylated residue": "Oxidation",
     "iodoacetamide derivatized residue": "Carbamidomethyl",
@@ -390,7 +415,7 @@ def normalize_value(col: str, val: str) -> str:
 
     elif "alkylationreagent" in col:
         if "iodoacetamide" in vl or "2-iodoacetamide" in vl:
-            return "iodoacetamide"
+            return "IAA"
         if "chloroacetamide" in vl:
             return "chloroacetamide"
         return v
@@ -429,6 +454,9 @@ def normalize_value(col: str, val: str) -> str:
             return "ESI"
         if "maldi" in vl:
             return "MALDI"
+    
+    elif "separation" in col and "comment" in col:
+        return SEPARATION_MAP.get(vl, v)
 
     return v
 
