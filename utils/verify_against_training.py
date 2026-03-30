@@ -15,7 +15,7 @@ import os
 import sys
 from collections import defaultdict, Counter
 
-sys.stdout.reconfigure(encoding='utf-8')
+# sys.stdout.reconfigure(encoding='utf-8')
 
 
 def normalize(v):
