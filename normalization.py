@@ -443,6 +443,14 @@ def normalize_value(col: str, val: str) -> str:
         return ANCESTRY_MAP.get(vl, v)
     
     elif "organismpart" in col:
+        # Cell types are not organism parts
+        _CELL_TYPE_NAMES = {
+            "fibroblast", "macrophage", "neuron", "epithelial", "endothelial",
+            "lymphocyte", "monocyte", "hepatocyte", "cardiomyocyte", "melanocyte",
+            "astrocyte", "keratinocyte", "osteoblast", "chondrocyte",
+        }
+        if vl in _CELL_TYPE_NAMES:
+            return "Not Applicable"
         return ORGANISM_PART_MAP.get(vl, v)
     
     # elif "disease" in col and "factorvalue" not in col:
@@ -464,6 +472,23 @@ def normalize_value(col: str, val: str) -> str:
     # base_col = re.sub(r'\.\d+$', '', col).strip()
     # snapped = fuzzy_snap(v, base_col, cutoff=0.82)
     # return snapped
+
+def cross_field_fixes(metadata: dict) -> dict:
+    """Fix values that depend on other field values."""
+    mt = str(metadata.get("characteristics[materialtype]", "")).lower()
+    disease = str(metadata.get("characteristics[disease]", "")).lower()
+    orgpart = str(metadata.get("characteristics[organismpart]", "")).lower()
+
+    # Rule 2: mock/GFP/healthy aren't diseases for cell line studies
+    BAD_DISEASES = {"mock", "gfp expression", "healthy", "wildtype", "wild type", "wt"}
+    if mt == "cell line" and disease in BAD_DISEASES:
+        metadata["characteristics[disease]"] = "Not Applicable"
+
+    # Rule 5: serum as materialtype when organismpart is tissue
+    if "tissue" in orgpart and mt == "serum":
+        metadata["characteristics[materialtype]"] = "tissue"
+
+    return metadata
 
 
 # def _load_obo_lookup(filename: str) -> dict:

@@ -11,7 +11,7 @@ Usage:
 
 import os
 import pandas as pd
-from .normalization import normalize_value
+from .normalization import normalize_value, cross_field_fixes
 
 SAMPLE_SUB = "/kaggle/input/competitions/harmonizing-the-data-of-your-data/SampleSubmission.csv"
 OUTPUT_DIR = "/kaggle/working"
@@ -172,6 +172,7 @@ def build_submission(results: dict, two_pass: bool = False) -> pd.DataFrame:
         pxd_id = cache_key.replace("_pass2", "")
 
         metadata = result["metadata"]
+        metadata = cross_field_fixes(metadata)
         # Handle case where model returned a list of dicts
         if isinstance(metadata, list):
             if metadata:
