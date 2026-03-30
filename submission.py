@@ -52,6 +52,12 @@ HEDGE_COLS = {"characteristics[materialtype]", "characteristics[disease]",
                 "characteristics[organismpart]", "characteristics[celltype]",
                 "characteristics[cellline]", "comment[acquisitionmethod]"}
 
+ALWAYS_BLANK = {
+    "Characteristics[AncestryCategory]",
+    "Characteristics[SyntheticPeptide]",
+    "Characteristics[PooledSample]",
+}
+
 
 # def _build_global_modes(sub_df: pd.DataFrame):
 #     """Build global mode fallback from training.csv."""
@@ -323,6 +329,11 @@ def build_submission(results: dict, two_pass: bool = False) -> pd.DataFrame:
     #             continue
     #         if (pxd, col) in safe_pairs:
     #             sub_df.at[idx, col] = "Not Applicable"
+
+    for idx in sub_df.index:
+        for col in ALWAYS_BLANK:
+            if col in sub_df.columns:
+                sub_df.at[idx, col] = "Not Applicable"
 
     # Summary
     non_na = (sub_df.drop(columns=["ID", "PXD", "Raw Data File", "Usage"]) != "Not Applicable").sum().sum()
