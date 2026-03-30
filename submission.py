@@ -337,13 +337,6 @@ def build_submission(results: dict, two_pass: bool = False) -> pd.DataFrame:
     #         if (pxd, col) in safe_pairs:
     #             sub_df.at[idx, col] = "Not Applicable"
 
-    # After building full submission, blank everything not confident
-    for idx in sub_df.index:
-        for col in sub_df.columns:
-            if col in ["ID", "PXD", "Raw Data File", "Usage"]:
-                continue
-            if col not in CONFIDENT_COLS:
-                sub_df.at[idx, col] = "Not Applicable"
 
     # Summary
     non_na = (sub_df.drop(columns=["ID", "PXD", "Raw Data File", "Usage"]) != "Not Applicable").sum().sum()
