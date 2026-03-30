@@ -52,10 +52,17 @@ HEDGE_COLS = {"characteristics[materialtype]", "characteristics[disease]",
                 "characteristics[organismpart]", "characteristics[celltype]",
                 "characteristics[cellline]", "comment[acquisitionmethod]"}
 
-ALWAYS_BLANK = {
-    "Characteristics[AncestryCategory]",
-    "Characteristics[SyntheticPeptide]",
-    "Characteristics[PooledSample]",
+CONFIDENT_COLS = {
+    "Characteristics[Organism]",
+    "Comment[Instrument]", 
+    "Characteristics[Label]",
+    "Characteristics[CleavageAgent]",
+    "Characteristics[Modification]",
+    "Characteristics[Modification].1",
+    "Characteristics[Modification].2",
+    "Comment[FragmentationMethod]",
+    "Comment[PrecursorMassTolerance]",
+    "Comment[FragmentMassTolerance]",
 }
 
 
@@ -330,9 +337,12 @@ def build_submission(results: dict, two_pass: bool = False) -> pd.DataFrame:
     #         if (pxd, col) in safe_pairs:
     #             sub_df.at[idx, col] = "Not Applicable"
 
+    # After building full submission, blank everything not confident
     for idx in sub_df.index:
-        for col in ALWAYS_BLANK:
-            if col in sub_df.columns:
+        for col in sub_df.columns:
+            if col in ["ID", "PXD", "Raw Data File", "Usage"]:
+                continue
+            if col not in CONFIDENT_COLS:
                 sub_df.at[idx, col] = "Not Applicable"
 
     # Summary
