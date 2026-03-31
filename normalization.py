@@ -444,14 +444,14 @@ def normalize_value(col: str, val: str) -> str:
         return ANCESTRY_MAP.get(vl, v)
     
     elif "organismpart" in col:
-        # Cell types are not organism parts
-        _CELL_TYPE_NAMES = {
-            "fibroblast", "macrophage", "neuron", "epithelial", "endothelial",
-            "lymphocyte", "monocyte", "hepatocyte", "cardiomyocyte", "melanocyte",
-            "astrocyte", "keratinocyte", "osteoblast", "chondrocyte",
-        }
-        if vl in _CELL_TYPE_NAMES:
-            return "Not Applicable"
+        # # Cell types are not organism parts
+        # _CELL_TYPE_NAMES = {
+        #     "fibroblast", "macrophage", "neuron", "epithelial", "endothelial",
+        #     "lymphocyte", "monocyte", "hepatocyte", "cardiomyocyte", "melanocyte",
+        #     "astrocyte", "keratinocyte", "osteoblast", "chondrocyte",
+        # }
+        # if vl in _CELL_TYPE_NAMES:
+        #     return "Not Applicable"
         return ORGANISM_PART_MAP.get(vl, v)
     
     # elif "disease" in col and "factorvalue" not in col:
