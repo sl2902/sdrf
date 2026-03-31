@@ -51,14 +51,13 @@ async def run_perfile_extraction(
     prompt_module,
     max_concurrent: int = 2,
     cache_dir: str = OUTPUT_DIR,
-    cache_file: str = "extraction_cache_gemini_pro.json",
     chunk_size: int = 40,
 ) -> dict:
     """
     Run per-file extraction for all PXDs using V1 cached results.
     Returns dict: {pxd: {filename: {fraction, replicate, label}}}
     """
-    cache_file = os.path.join(cache_dir, cache_file)
+    cache_file = os.path.join(cache_dir, "extraction_cache_perfile.json")
     
     # Load existing cache
     if os.path.exists(cache_file):
