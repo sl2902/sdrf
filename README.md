@@ -28,7 +28,19 @@ Dual-LLM extraction pipeline for harmonizing proteomics metadata from scientific
 
 - Local Training F1: 0.519 (87 valid PXDs)
 - Kaggle Public LB: 0.371
-- Key finding: format alignment (IAA, nanoESI, DDA/DIA) drove larger gains than extraction improvements
+- Key finding: Longer methods text (18K chars), Global mode fallback from training data and 
+format alignment (IAA, nanoESI, DDA/DIA) drove larger gains than extraction improvements
+
+## Prerequisites
+
+**API Keys (set as Kaggle Secrets):**
+- `OPENAI_API_KEY`: OpenAI API key with GPT-4o access
+- GCP Service Account JSON: stored as Kaggle Secret for Vertex AI access
+
+**GCP Setup:**
+- Enable the **Vertex AI API** (`aiplatform.googleapis.com`) in your GCP project
+- Service account requires `Vertex AI User` role
+- Region: `us-central1`
 
 ## Installation & Usage
 ```bash
