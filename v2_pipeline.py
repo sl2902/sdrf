@@ -57,7 +57,7 @@ async def run_perfile_extraction(
     Run per-file extraction for all PXDs using V1 cached results.
     Returns dict: {pxd: {filename: {fraction, replicate, label}}}
     """
-    cache_file = os.path.join(cache_dir, "extraction_cache_perfile.json")
+    cache_file = os.path.join(OUTPUT_DIR, "extraction_cache_perfile.json")
     print(f"Location of cache perfile {cache_file}")
     
     # Load existing cache
