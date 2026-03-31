@@ -64,6 +64,11 @@ NEVER_GLOBAL = {
 #     "Comment[PrecursorMassTolerance]",
 #     "Comment[FragmentMassTolerance]",
 # }
+SELECTIVE_BLANK = {
+    "Characteristics[SyntheticPeptide]",      # 15/15 — never in ground truth
+    "Characteristics[PooledSample]",           # 5 — likely never needed
+    "Characteristics[AncestryCategory]",       # 4 — rarely in ground truth
+}
 
 
 # def _build_global_modes(sub_df: pd.DataFrame):
@@ -337,6 +342,11 @@ def build_submission(results: dict, two_pass: bool = False) -> pd.DataFrame:
     #             continue
     #         if (pxd, col) in safe_pairs:
     #             sub_df.at[idx, col] = "Not Applicable"
+
+    for idx in sub_df.index:
+        for col in SELECTIVE_BLANK:
+            if col in sub_df.columns:
+                sub_df.at[idx, col] = "Not Applicable"
 
 
     # Summary
