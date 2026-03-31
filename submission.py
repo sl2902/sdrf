@@ -11,7 +11,7 @@ Usage:
 
 import os
 import pandas as pd
-from .normalization import normalize_value, cross_field_fixes
+from .normalization import normalize_value
 
 SAMPLE_SUB = "/kaggle/input/competitions/harmonizing-the-data-of-your-data/SampleSubmission.csv"
 OUTPUT_DIR = "/kaggle/working"
