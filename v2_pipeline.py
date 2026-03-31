@@ -58,7 +58,7 @@ async def run_perfile_extraction(
     Returns dict: {pxd: {filename: {fraction, replicate, label}}}
     """
     cache_file = os.path.join(cache_dir, "extraction_cache_perfile.json")
-    logger.info(f"Location of cache perfile {cache_file}")
+    print(f"Location of cache perfile {cache_file}")
     
     # Load existing cache
     if os.path.exists(cache_file):
