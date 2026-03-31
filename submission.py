@@ -48,22 +48,22 @@ NEVER_GLOBAL = {
     "Characteristics[SpikedCompound]",
 }
 
-HEDGE_COLS = {"characteristics[materialtype]", "characteristics[disease]",
-                "characteristics[organismpart]", "characteristics[celltype]",
-                "characteristics[cellline]", "comment[acquisitionmethod]"}
+# HEDGE_COLS = {"characteristics[materialtype]", "characteristics[disease]",
+#                 "characteristics[organismpart]", "characteristics[celltype]",
+#                 "characteristics[cellline]", "comment[acquisitionmethod]"}
 
-CONFIDENT_COLS = {
-    "Characteristics[Organism]",
-    "Comment[Instrument]", 
-    "Characteristics[Label]",
-    "Characteristics[CleavageAgent]",
-    "Characteristics[Modification]",
-    "Characteristics[Modification].1",
-    "Characteristics[Modification].2",
-    "Comment[FragmentationMethod]",
-    "Comment[PrecursorMassTolerance]",
-    "Comment[FragmentMassTolerance]",
-}
+# CONFIDENT_COLS = {
+#     "Characteristics[Organism]",
+#     "Comment[Instrument]", 
+#     "Characteristics[Label]",
+#     "Characteristics[CleavageAgent]",
+#     "Characteristics[Modification]",
+#     "Characteristics[Modification].1",
+#     "Characteristics[Modification].2",
+#     "Comment[FragmentationMethod]",
+#     "Comment[PrecursorMassTolerance]",
+#     "Comment[FragmentMassTolerance]",
+# }
 
 
 # def _build_global_modes(sub_df: pd.DataFrame):
@@ -172,7 +172,7 @@ def build_submission(results: dict, two_pass: bool = False) -> pd.DataFrame:
         pxd_id = cache_key.replace("_pass2", "")
 
         metadata = result["metadata"]
-        metadata = cross_field_fixes(metadata)
+        # metadata = cross_field_fixes(metadata)
         # Handle case where model returned a list of dicts
         if isinstance(metadata, list):
             if metadata:

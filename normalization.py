@@ -467,32 +467,32 @@ def normalize_value(col: str, val: str) -> str:
     elif "separation" in col and "comment" in col:
         return SEPARATION_MAP.get(vl, v)
     
-    # SyntheticPeptide: "no" → "not synthetic", "yes" → "synthetic"
-    elif "syntheticpeptide" in col:
-        if vl == "no":
-            return "not synthetic"
-        if vl == "yes":
-            return "synthetic"
-        return v
+    # # SyntheticPeptide: "no" → "not synthetic", "yes" → "synthetic"
+    # elif "syntheticpeptide" in col:
+    #     if vl == "no":
+    #         return "not synthetic"
+    #     if vl == "yes":
+    #         return "synthetic"
+    #     return v
 
-    # DevelopmentalStage: "fetal" → "fetus"  (0.600 similarity, below 0.80)
-    elif "developmentalstage" in col:
-        if vl == "fetal":
-            return "fetus"
-        return v
+    # # DevelopmentalStage: "fetal" → "fetus"  (0.600 similarity, below 0.80)
+    # elif "developmentalstage" in col:
+    #     if vl == "fetal":
+    #         return "fetus"
+    #     return v
     
-    # Temperature: strip " C" and " °C"  (training uses bare numbers like "37", "40")
-    elif "temperature" in col and "factorvalue" not in col:
-        v_clean = v.replace("°C", "").replace(" C", "").strip()
-        return v_clean
+    # # Temperature: strip " C" and " °C"  (training uses bare numbers like "37", "40")
+    # elif "temperature" in col and "factorvalue" not in col:
+    #     v_clean = v.replace("°C", "").replace(" C", "").strip()
+    #     return v_clean
     
-    # Time: "30 min" → "30m", "24 hours" → "24h", etc
-    elif "time" in col and "characteristics" in col and "gradient" not in col and "sampling" not in col:
-        v_clean = v.replace(" min", "m").replace(" minutes", "m")
-        v_clean = v_clean.replace(" hours", "h").replace(" hour", "h")
-        v_clean = v_clean.replace(" days", "d").replace(" day", "d")
-        v_clean = v_clean.replace(" s", "s").replace(" seconds", "s")
-        return v_clean
+    # # Time: "30 min" → "30m", "24 hours" → "24h", etc
+    # elif "time" in col and "characteristics" in col and "gradient" not in col and "sampling" not in col:
+    #     v_clean = v.replace(" min", "m").replace(" minutes", "m")
+    #     v_clean = v_clean.replace(" hours", "h").replace(" hour", "h")
+    #     v_clean = v_clean.replace(" days", "d").replace(" day", "d")
+    #     v_clean = v_clean.replace(" s", "s").replace(" seconds", "s")
+    #     return v_clean
 
     return v
 
@@ -501,22 +501,22 @@ def normalize_value(col: str, val: str) -> str:
     # snapped = fuzzy_snap(v, base_col, cutoff=0.82)
     # return snapped
 
-def cross_field_fixes(metadata: dict) -> dict:
-    """Fix values that depend on other field values."""
-    mt = str(metadata.get("characteristics[materialtype]", "")).lower()
-    disease = str(metadata.get("characteristics[disease]", "")).lower()
-    orgpart = str(metadata.get("characteristics[organismpart]", "")).lower()
+# def cross_field_fixes(metadata: dict) -> dict:
+#     """Fix values that depend on other field values."""
+#     mt = str(metadata.get("characteristics[materialtype]", "")).lower()
+#     disease = str(metadata.get("characteristics[disease]", "")).lower()
+#     orgpart = str(metadata.get("characteristics[organismpart]", "")).lower()
 
-    # Rule 2: mock/GFP/healthy aren't diseases for cell line studies
-    BAD_DISEASES = {"mock", "gfp expression", "healthy", "wildtype", "wild type", "wt"}
-    if mt == "cell line" and disease in BAD_DISEASES:
-        metadata["characteristics[disease]"] = "Not Applicable"
+#     # Rule 2: mock/GFP/healthy aren't diseases for cell line studies
+#     BAD_DISEASES = {"mock", "gfp expression", "healthy", "wildtype", "wild type", "wt"}
+#     if mt == "cell line" and disease in BAD_DISEASES:
+#         metadata["characteristics[disease]"] = "Not Applicable"
 
-    # Rule 5: serum as materialtype when organismpart is tissue
-    if "tissue" in orgpart and mt == "serum":
-        metadata["characteristics[materialtype]"] = "tissue"
+#     # Rule 5: serum as materialtype when organismpart is tissue
+#     if "tissue" in orgpart and mt == "serum":
+#         metadata["characteristics[materialtype]"] = "tissue"
 
-    return metadata
+#     return metadata
 
 
 # def _load_obo_lookup(filename: str) -> dict:
